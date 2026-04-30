@@ -1,0 +1,16 @@
+{
+  "name": "KULUNA VS PNC - GTA Kinshasa",
+  "short_name": "KULUNA PNC",
+  "start_url": ".",
+  "display": "fullscreen",
+  "background_color": "#000000",
+  "theme_color": "#FFD700",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "baron.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

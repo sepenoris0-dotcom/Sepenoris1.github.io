@@ -1,6 +1,7 @@
 {
   "name": "KULUNA VS PNC - GTA Kinshasa",
   "short_name": "KULUNA PNC",
+  "description": "Esquive la PNC dans les rues de Kinshasa avec le Baron Kuluna. Jeu 100% Congolais 🇨🇩",
   "start_url": ".",
   "display": "fullscreen",
   "background_color": "#000000",
@@ -10,7 +11,8 @@
     {
       "src": "baron.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

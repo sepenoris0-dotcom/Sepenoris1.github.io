@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>KULUNA VS PNC - GTA Kinshasa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: Arial; }
+        canvas { display: block; margin: 0 auto; }
+        #score { position: absolute; top: 10px; left: 10px; color: gold; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px #000; }
+        #lives { position: absolute; top: 10px; right: 10px; color: red; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px #000; }
+        #gameOver { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 48px; text-align: center; display: none; background: rgba(0,0,0,0.8); padding: 20px; border: 3px solid gold; }
+    </style>
+</head>
+<body>
+    <div id="score">FC: 0</div>
+    <div id="lives">❤️❤️❤️</div>
+    <div id="gameOver">GAME OVER<br><span style="font-size:24px">Appuie pour rejouer</span></div>
+    <canvas id="game"></canvas>
+
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let kuluna = { x: canvas.width/2, y: canvas.height-100, w: 50, h: 80, speed: 8 };
+let jeeps = [];
+let billets = [];
+let score = 0;
+let lives = 3;
+let gameRunning = true;
+
+function drawKuluna() {
+    ctx.fillStyle = 'gold';
+    ctx.fillRect(kuluna.x, kuluna.y, kuluna.w, kuluna.h); // Baron simplifié
+    ctx.fillStyle = 'black';
+    ctx.fillRect(kuluna.x+10, kuluna.y+10, 30, 10); // Lunettes
+}
+
+function spawnJeep() {
+    jeeps.push({ x: Math.random()*(canvas.width-60), y: -100, w: 60, h: 100, speed: 5+Math.random()*3 });
+}
+
+function spawnBillet() {
+    billets.push({ x: Math.random()*(canvas.width-30), y: -30, w: 30, h: 15, speed: 3 });
+}
+
+function update() {
+    if (!gameRunning) return;
+
+    // Jeeps
+    jeeps.forEach((j, i) => {
+        j.y += j.speed;
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(j.x, j.y, j.w, j.h);
+        ctx.fillStyle = 'red';
+        ctx.fillRect(j.x+20, j.y+10, 20, 10); // Gyrophare
+
+        if (j.y > canvas.height) jeeps.splice(i,1);
+
+        // Collision
+        if (kuluna.x < j.x+j.w && kuluna.x+kuluna.w > j.x &&
+            kuluna.y < j.y+j.h && kuluna.y+kuluna.h > j.y) {
+            lives--;
+            jeeps.splice(i,1);
+            document.getElementById('lives').innerHTML = '❤️'.repeat(lives);
+            if (lives <= 0) endGame();
+        }
+    });
+
+    // Billets FC
+    billets.forEach((b, i) => {
+        b.y += b.speed;
+        ctx.fillStyle = 'lime';
+        ctx.fillRect(b.x, b.y, b.w, b.h);
+        ctx.fillStyle = 'black';
+        ctx.font = '10px Arial';
+        ctx.fillText('FC', b.x+5, b.y+12);
+
+        if (b.y > canvas.height) billets.splice(i,1);
+
+        if (kuluna.x < b.x+b.w && kuluna.x+kuluna.w > b.x &&
+            kuluna.y < b.y+b.h && kuluna.y+kuluna.h > b.y) {
+            score += 100;
+            billets.splice(i,1);
+            document.getElementById('score').innerText = 'FC: ' + score;
+        }
+    });
+}
+
+function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = '#111';
+    ctx.fillRect(0,0,canvas.width,canvas.height); // Fond Gombe by night
+    drawKuluna();
+    update();
+    if (gameRunning) requestAnimationFrame(draw);
+}
+
+// Contrôles tactile + clavier
+document.addEventListener('touchmove', e => {
+    kuluna.x = e.touches[0].clientX - kuluna.w/2;
+});
+document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') kuluna.x -= kuluna.speed;
+    if (e.key === 'ArrowRight') kuluna.x += kuluna.speed;
+});
+canvas.addEventListener('click', () => {
+    if (!gameRunning) location.reload();
+});
+
+function endGame() {
+    gameRunning = false;
+    document.getElementById('gameOver').style.display = 'block';
+}
+
+setInterval(spawnJeep, 1500);
+setInterval(spawnBillet, 2000);
+draw();
+</script>
+</body>
+</html>
